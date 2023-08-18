@@ -11,7 +11,6 @@ import com.gae.scaffolder.plugin.interfaces.*;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.iid.InstanceIdResult;
 import com.google.firebase.messaging.FirebaseMessaging;
 
 import org.apache.cordova.CallbackContext;
@@ -82,7 +81,8 @@ public class FCMPlugin extends CordovaPlugin {
         FirebaseMessaging.getInstance().subscribeToTopic("all");
     }
 
-    public boolean execute(final String action, final JSONArray args, final CallbackContext callbackContext) throws JSONException {
+    public boolean execute(final String action, final JSONArray args, final CallbackContext callbackContext)
+            throws JSONException {
         Log.d(TAG, "==> FCMPlugin execute: " + action);
 
         try {
@@ -129,7 +129,8 @@ public class FCMPlugin extends CordovaPlugin {
                     public void run() {
                         try {
                             Context context = cordova.getActivity();
-                            NotificationManager nm = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+                            NotificationManager nm = (NotificationManager) context
+                                    .getSystemService(Context.NOTIFICATION_SERVICE);
                             nm.cancelAll();
                             callbackContext.success();
                         } catch (Exception e) {
@@ -245,8 +246,8 @@ public class FCMPlugin extends CordovaPlugin {
         cordova.getThreadPool().execute(new Runnable() {
             public void run() {
                 try {
-                    NotificationManagerCompat notificationManagerCompat =
-                            NotificationManagerCompat.from(cordova.getActivity().getApplicationContext());
+                    NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat
+                            .from(cordova.getActivity().getApplicationContext());
 
                     boolean areNotificationsEnabled = notificationManagerCompat.areNotificationsEnabled();
 
@@ -274,7 +275,7 @@ public class FCMPlugin extends CordovaPlugin {
                     if (Build.VERSION.SDK_INT >= 33) { // Android 13+
                         boolean hasRuntimePermission = hasRuntimePermission(POST_NOTIFICATIONS);
                         if (!hasRuntimePermission) {
-                            String[] permissions = new String[]{qualifyPermission(POST_NOTIFICATIONS)};
+                            String[] permissions = new String[] { qualifyPermission(POST_NOTIFICATIONS) };
                             postNotificationPermissionRequestCallbackContext = callbackContext;
                             requestPermissions(plugin, POST_NOTIFICATIONS_PERMISSION_REQUEST_ID, permissions);
                             sendEmptyPluginResultAndKeepCallback(callbackContext);
@@ -311,17 +312,20 @@ public class FCMPlugin extends CordovaPlugin {
             Boolean bool = (Boolean) method.invoke(cordova, qualifiedPermission);
             hasRuntimePermission = bool.booleanValue();
         } catch (NoSuchMethodException e) {
-            Log.w(TAG, "Cordova v" + CordovaWebView.CORDOVA_VERSION + " does not support runtime permissions so defaulting to GRANTED for " + permission);
+            Log.w(TAG, "Cordova v" + CordovaWebView.CORDOVA_VERSION
+                    + " does not support runtime permissions so defaulting to GRANTED for " + permission);
         }
         return hasRuntimePermission;
     }
 
     protected void requestPermissions(CordovaPlugin plugin, int requestCode, String[] permissions) throws Exception {
         try {
-            java.lang.reflect.Method method = cordova.getClass().getMethod("requestPermissions", org.apache.cordova.CordovaPlugin.class, int.class, java.lang.String[].class);
+            java.lang.reflect.Method method = cordova.getClass().getMethod("requestPermissions",
+                    org.apache.cordova.CordovaPlugin.class, int.class, java.lang.String[].class);
             method.invoke(cordova, plugin, requestCode, permissions);
         } catch (NoSuchMethodException e) {
-            throw new Exception("requestPermissions() method not found in CordovaInterface implementation of Cordova v" + CordovaWebView.CORDOVA_VERSION);
+            throw new Exception("requestPermissions() method not found in CordovaInterface implementation of Cordova v"
+                    + CordovaWebView.CORDOVA_VERSION);
         }
     }
 
@@ -330,13 +334,16 @@ public class FCMPlugin extends CordovaPlugin {
      ***********/
 
     /**
-     * then updates the list of status based on the grantResults before passing the result back via the context.
+     * then updates the list of status based on the grantResults before passing the
+     * result back via the context.
      *
      * @param requestCode  - ID that was used when requesting permissions
      * @param permissions  - list of permissions that were requested
-     * @param grantResults - list of flags indicating if above permissions were granted or denied
+     * @param grantResults - list of flags indicating if above permissions were
+     *                     granted or denied
      */
-    public void onRequestPermissionResult(int requestCode, String[] permissions, int[] grantResults) throws JSONException {
+    public void onRequestPermissionResult(int requestCode, String[] permissions, int[] grantResults)
+            throws JSONException {
         String sRequestId = String.valueOf(requestCode);
         Log.v(TAG, "Received result for permissions request id=" + sRequestId);
         try {
@@ -440,7 +447,8 @@ public class FCMPlugin extends CordovaPlugin {
     protected Context getContext() {
         context = cordova != null ? cordova.getActivity().getBaseContext() : context;
         if (context == null) {
-            throw new RuntimeException("The Android Context is required. Verify if the 'activity' or 'context' are passed by constructor");
+            throw new RuntimeException(
+                    "The Android Context is required. Verify if the 'activity' or 'context' are passed by constructor");
         }
 
         return context;
